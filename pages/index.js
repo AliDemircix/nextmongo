@@ -1,65 +1,104 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import Link from "next/link";
+import fetch from "isomorphic-unfetch";
+import Image from "next/image";
 
-export default function Home() {
+const Index = ({ products }) => {
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
+    <div>
+      <h1 style={{ backgroundColor: "#f3d2a3", textDecorationStyle: "dashed" }}>
+        Products
+      </h1>
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          flexDirection: "row",
+          width: "90vw",
+          margin: "auto",
+        }}
+      >
+        {products.map((product) => {
+          return (
+            <div
+              key={product._id}
+              style={{
+                flex: "28vw",
+                border: "solid 1px rgba(30, 60, 40, .2)",
+                marginBottom: "5px",
+                margin: "10px",
+                textAlign: "center",
+                overflow: "visible",
+              }}
+            >
+              <div style={{ padding: "10px" }}>
+                <Link href={`/${product._id}`}>
+                  <a>
+                    <Image
+                      src={`/images${product.image}`}
+                      alt='{product.title}'
+                      height={250}
+                      width={250}
+                    />
+                  </a>
+                </Link>
+                <Link href={`/${product._id}`}>
+                  <a>
+                    <h1 style={{ color: "red" }}>{product.title}</h1>
+                  </a>
+                </Link>
+                <p
+                  style={{
+                    backgroundColor: "lavender",
+                    borderRadius: "6px",
+                  }}
+                >
+                  {product.description}
+                </p>
+                <p
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    color: "navy",
+                  }}
+                >
+                  {product.price}
+                </p>
+                <button
+                  style={{
+                    border: "none",
+                    padding: "8px",
+                    backgroundColor: "olive",
+                    color: "white",
+                    margin: "5px",
+                  }}
+                >
+                  Add to Cart
+                </button>
+                {/* <Link href={`/${product._id}/edit`}>
+                  <a>
+                    <button
+                      style={{
+                        border: "none",
+                        padding: "8px",
+                        backgroundColor: "tomato",
+                        color: "white",
+                      }}
+                    >
+                      Edit
+                    </button>
+                  </a>
+                </Link> */}
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
-  )
-}
+  );
+};
+Index.getInitialProps = async () => {
+  const res = await fetch("http://localhost:3000/api/products");
+  const { data } = await res.json();
+  return { products: data };
+};
+export default Index;
